@@ -13,6 +13,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "user_data_script" {
+  description = "Path to the user data template file"
+  type        = string
+}
+
 variable "ingress_ports" {
   description = "Map of ingress ports and their protocols"
   type = map(object({

@@ -21,7 +21,7 @@ module "ec2_with_ssm" {
   source        = "git::https://github.com/harmonate/tf-module-ec2.git?ref=main"
   instance_type = "t3.micro"
   subnet_id     = "subnet-0123456789abcdef0"
-  region        = "us-west-2"
+  vpc_id        = "vpc-012345678"
   ingress_ports = {
     ssh = {
       protocol    = "tcp"
@@ -30,4 +30,6 @@ module "ec2_with_ssm" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
+  user_data_script = "${path.module}/scripts/user_data.sh"
 }
+```

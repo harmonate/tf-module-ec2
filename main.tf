@@ -19,17 +19,19 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 resource "aws_instance" "ec2_instance" {
-  ami           = data.aws_ami.amazon_linux_2.id
-  instance_type = var.instance_type
-  subnet_id     = var.subnet_id
+  ami                    = data.aws_ami.amazon_linux_2.id
+  instance_type          = var.instance_type
+  subnet_id              = var.subnet_id
+  vpc_security_group_ids = [aws_security_group.ssm_sg.id]
 
   tags = {
     Name = "SSM-Managed-Instance"
   }
 
+  user_data = templatefile(var.user_data_script, {})
+
   # Enable SSM
   iam_instance_profile = aws_iam_instance_profile.ssm_role.name
-  security_groups      = [aws_security_group.ssm_sg.name]
 }
 
 resource "aws_iam_instance_profile" "ssm_role" {
@@ -44,8 +46,8 @@ resource "aws_iam_role" "ssm_role" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
         Principal = {
           Service = "ec2.amazonaws.com"
         }
