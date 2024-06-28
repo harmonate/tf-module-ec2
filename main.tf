@@ -1,7 +1,3 @@
-provider "aws" {
-  alias = "default"
-}
-
 data "aws_ami" "amazon_linux_2" {
   most_recent = true
   filter {
