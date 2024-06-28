@@ -18,7 +18,7 @@ This module creates an EC2 instance with the specified instance type, looks up a
 
 ```hcl
 module "ec2_with_ssm" {
-  source        = "https://github.com/harmonate/tf-module-ec2.git?ref=main"
+  source        = "git::https://github.com/harmonate/tf-module-ec2.git?ref=main"
   instance_type = "t3.micro"
   subnet_id     = "subnet-0123456789abcdef0"
   region        = "us-west-2"
