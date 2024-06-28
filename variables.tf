@@ -8,6 +8,11 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "region" {
+  description = "The AWS region"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "The ID of the VPC where the security group will be created"
   type        = string
