@@ -1,3 +1,7 @@
+provider "aws" {
+  alias = "default"
+}
+
 data "aws_ami" "amazon_linux_2" {
   most_recent = true
   filter {
@@ -19,6 +23,7 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 resource "aws_instance" "ec2_instance" {
+  provider               = aws.default
   ami                    = data.aws_ami.amazon_linux_2.id
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
@@ -35,12 +40,14 @@ resource "aws_instance" "ec2_instance" {
 }
 
 resource "aws_iam_instance_profile" "ssm_role" {
-  name = "ssm_instance_profile"
-  role = aws_iam_role.ssm_role.name
+  provider = aws.default
+  name     = "ssm_instance_profile"
+  role     = aws_iam_role.ssm_role.name
 }
 
 resource "aws_iam_role" "ssm_role" {
-  name = "ssm_instance_role"
+  provider = aws.default
+  name     = "ssm_instance_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -57,11 +64,13 @@ resource "aws_iam_role" "ssm_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm" {
+  provider   = aws.default
   role       = aws_iam_role.ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_security_group" "ssm_sg" {
+  provider    = aws.default
   name        = "ssm_sg"
   description = "Allow SSM access"
   vpc_id      = var.vpc_id
