@@ -67,8 +67,7 @@ resource "aws_iam_role" "ssm_role" {
         Principal = {
           Service = "ec2.amazonaws.com"
         }
-      },
-      jsondecode(var.additional_trust_policy)
+      }
     ]
   })
 }
