@@ -30,7 +30,8 @@ module "ec2_with_ssm" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
-    user_data = <<-EOF
+  additional_trust_policy = local.additional_trust_policy
+  user_data = <<-EOF
               #!/bin/bash
               echo "Hello World" > /home/ec2-user/hello-world.sh
               chmod +x /home/ec2-user/hello-world.sh

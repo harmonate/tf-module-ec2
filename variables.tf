@@ -19,6 +19,12 @@ variable "additional_user_data" {
   default     = ""
 }
 
+variable "additional_trust_policy" {
+  description = "Additional trust policy for the instance role"
+  type        = string
+  default     = "{}"
+}
+
 variable "ingress_ports" {
   description = "Map of ingress ports and their protocols"
   type = map(object({
