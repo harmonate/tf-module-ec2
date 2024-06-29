@@ -13,9 +13,10 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "user_data" {
+variable "additional_user_data" {
   description = "Text of the user data script"
   type        = string
+  default     = ""
 }
 
 variable "ingress_ports" {

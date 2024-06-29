@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Set up bash environment
+USER_NAME="ssm-user"
+USER_HOME="/home/$USER_NAME"
+SCRIPTS_DIR="$USER_HOME/scripts"
+
+# Create scripts directory if it doesn't exist
+mkdir -p $SCRIPTS_DIR
+chown $USER_NAME:$USER_NAME $SCRIPTS_DIR
+
+# Create a custom .bashrc file
+cat <<EOT > $USER_HOME/.bashrc
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
+# User specific environment
+PATH="\$HOME/.local/bin:\$HOME/bin:\$PATH"
+export PATH
+
+# User specific aliases and functions
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# Set a custom prompt
+export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+
+# Add scripts directory to PATH
+export PATH="\$PATH:$SCRIPTS_DIR"
+
+# Display a welcome message
+echo "Welcome to your EC2 instance!"
+echo "Your scripts are located in: $SCRIPTS_DIR"
+echo "Available scripts:"
+ls -1 $SCRIPTS_DIR
+EOT
+
+# Set ownership of .bashrc
+chown $USER_NAME:$USER_NAME $USER_HOME/.bashrc
+
+# Create a custom .bash_profile to ensure .bashrc is sourced
+cat <<EOT > $USER_HOME/.bash_profile
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+
+# User specific environment and startup programs
+EOT
+
+# Set ownership of .bash_profile
+chown $USER_NAME:$USER_NAME $USER_HOME/.bash_profile
+
+# Ensure bash is the default shell for the user
+usermod -s /bin/bash $USER_NAME
+
+echo "Bash environment setup complete for $USER_NAME"
+
+# Additional user data
+${additional_user_data}
