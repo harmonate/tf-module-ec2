@@ -1,5 +1,16 @@
 #!/bin/bash
 
+
+# Update the system and install AWS CLI and jq
+yum update -y
+yum install -y jq
+
+# Install the latest AWS CLI v2
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+rm -rf aws awscliv2.zip
+
 # Set up bash environment
 USER_NAME="ssm-user"
 USER_HOME="/home/$USER_NAME"
@@ -62,6 +73,10 @@ chown $USER_NAME:$USER_NAME $USER_HOME/.bash_profile
 
 # Ensure bash is the default shell for the user
 usermod -s /bin/bash $USER_NAME
+
+# Configure Session Manager to use bash
+echo '{"shell":"bash"}' > /etc/amazon/ssm/amazon-ssm-agent.json
+systemctl restart amazon-ssm-agent
 
 echo "Bash environment setup complete for $USER_NAME"
 
