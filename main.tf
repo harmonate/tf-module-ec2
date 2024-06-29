@@ -42,6 +42,10 @@ resource "aws_instance" "ec2_instance" {
 
   # Enable SSM
   iam_instance_profile = aws_iam_instance_profile.ssm_role.name
+
+  lifecycle {
+    ignore_changes = [ami, tags, volume_tags]
+  }
 }
 
 resource "aws_iam_instance_profile" "ssm_role" {
