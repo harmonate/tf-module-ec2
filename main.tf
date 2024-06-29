@@ -65,6 +65,12 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy_attachment" "additional_policies" {
+  count      = length(var.additional_iam_policies)
+  policy_arn = var.additional_iam_policies[count.index]
+  role       = aws_iam_role.ssm_role.name
+}
+
 resource "aws_security_group" "ssm_sg" {
   provider    = aws.default
   name        = "ssm_sg"

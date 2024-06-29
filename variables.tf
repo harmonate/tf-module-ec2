@@ -41,3 +41,9 @@ variable "ingress_ports" {
     }
   }
 }
+
+variable "additional_iam_policies" {
+  description = "List of additional IAM policy ARNs to attach to the instance role"
+  type        = list(string)
+  default     = []
+}
