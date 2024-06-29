@@ -71,11 +71,22 @@ EOT
 # Set ownership of .bash_profile
 chown $USER_NAME:$USER_NAME $USER_HOME/.bash_profile
 
+# Ensure .bashrc is sourced for non-interactive shells
+echo '[ -f ~/.bashrc ] && . ~/.bashrc' >> /etc/profile
+
 # Ensure bash is the default shell for the user
 usermod -s /bin/bash $USER_NAME
 
 # Configure Session Manager to use bash
-echo '{"shell":"bash"}' > /etc/amazon/ssm/amazon-ssm-agent.json
+cat <<EOT > /etc/amazon/ssm/amazon-ssm-agent.json
+{
+    "session": {
+        "shell": "bash",
+        "runAsEnabled": true,
+        "runAsDefaultUser": "$USER_NAME"
+    }
+}
+EOT
 systemctl restart amazon-ssm-agent
 
 echo "Bash environment setup complete for $USER_NAME"
