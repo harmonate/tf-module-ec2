@@ -13,8 +13,8 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "user_data_script" {
-  description = "Path to the user data template file"
+variable "user_data" {
+  description = "Text of the user data script"
   type        = string
 }
 

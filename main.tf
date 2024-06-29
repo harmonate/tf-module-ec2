@@ -29,7 +29,7 @@ resource "aws_instance" "ec2_instance" {
     Name = "SSM-Managed-Instance"
   }
 
-  user_data = templatefile(var.user_data_script, {})
+  user_data = var.user_data
 
   # Enable SSM
   iam_instance_profile = aws_iam_instance_profile.ssm_role.name

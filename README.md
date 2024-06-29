@@ -30,6 +30,11 @@ module "ec2_with_ssm" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
-  user_data_script = "${path.module}/scripts/user_data.sh"
+    user_data = <<-EOF
+              #!/bin/bash
+              echo "Hello World" > /home/ec2-user/hello-world.sh
+              chmod +x /home/ec2-user/hello-world.sh
+              EOF
+
 }
 ```
