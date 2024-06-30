@@ -60,6 +60,12 @@ variable "assume_role_policy" {
   type        = string
 }
 
+variable "iam_policy_arns" {
+  description = "List of IAM policy ARNs to attach to the instance role"
+  type        = list(string)
+  default     = []
+}
+
 variable "iam_policies" {
   description = "List of JSON formatted strings representing IAM policies"
   type = list(object({

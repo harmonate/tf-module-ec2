@@ -31,6 +31,12 @@ resource "aws_iam_role_policy" "custom_policies" {
   policy = var.iam_policies[count.index].policy
 }
 
+resource "aws_iam_role_policy_attachment" "arn_policies" {
+  count      = length(var.iam_policy_arns)
+  policy_arn = var.iam_policy_arns[count.index]
+  role       = aws_iam_role.ssm_role.name
+}
+
 
 resource "aws_iam_instance_profile" "ssm_profile" {
   provider = aws.default
