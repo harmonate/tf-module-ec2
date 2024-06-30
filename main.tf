@@ -18,33 +18,17 @@ data "aws_ami" "amazon_linux_2" {
   owners = ["amazon"]
 }
 
-locals {
-  service_principals = flatten([
-    for r in var.trust_relationships :
-    try(r.Principal.Service, [])
-  ])
-  aws_principals = flatten([
-    for r in var.trust_relationships :
-    try(r.Principal.AWS, [])
-  ])
-}
-
 resource "aws_iam_role" "ssm_role" {
   provider = aws.default
   name     = var.iam_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "sts:AssumeRole"
-        Principal = merge(
-          length(local.service_principals) > 0 ? { Service = local.service_principals } : {},
-          length(local.aws_principals) > 0 ? { AWS = local.aws_principals } : {}
-        )
-      }
-    ]
+    Statement = [for r in var.trust_relationships : {
+      Effect    = r.Effect
+      Action    = r.Action
+      Principal = r.Principal
+    }]
   })
 }
 
