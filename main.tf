@@ -24,17 +24,18 @@ resource "aws_iam_role" "ssm_role" {
   assume_role_policy = var.assume_role_policy
 }
 
-resource "aws_iam_instance_profile" "ssm_profile" {
-  provider = aws.default
-  name     = "${var.iam_role_name}_profile"
-  role     = aws_iam_role.ssm_role.name
-}
-
 resource "aws_iam_role_policy" "custom_policies" {
   count  = length(var.iam_policies)
   name   = var.iam_policies[count.index].name
   role   = aws_iam_role.ssm_role.id
   policy = var.iam_policies[count.index].policy
+}
+
+
+resource "aws_iam_instance_profile" "ssm_profile" {
+  provider = aws.default
+  name     = "${var.iam_role_name}_profile"
+  role     = aws_iam_role.ssm_role.name
 }
 
 resource "aws_instance" "ec2_instance" {
