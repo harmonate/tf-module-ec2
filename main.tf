@@ -29,14 +29,14 @@ resource "aws_iam_role" "ssm_role" {
         Effect = "Allow"
         Action = "sts:AssumeRole"
         Principal = {
-          Service = distinct(flatten([
+          Service = coalescelist(flatten([
             for r in var.trust_relationships :
             try(r.Principal.Service, [])
-          ]))
-          AWS = distinct(flatten([
+          ]), null)
+          AWS = coalescelist(flatten([
             for r in var.trust_relationships :
             try(r.Principal.AWS, [])
-          ]))
+          ]), null)
         }
       }
     ]
