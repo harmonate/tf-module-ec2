@@ -18,6 +18,17 @@ data "aws_ami" "amazon_linux_2" {
   owners = ["amazon"]
 }
 
+locals {
+  service_principals = distinct(flatten([
+    for r in var.trust_relationships :
+    try(r.Principal.Service, [])
+  ]))
+  aws_principals = distinct(flatten([
+    for r in var.trust_relationships :
+    try(r.Principal.AWS, [])
+  ]))
+}
+
 resource "aws_iam_role" "ssm_role" {
   provider = aws.default
   name     = var.iam_role_name
@@ -28,16 +39,10 @@ resource "aws_iam_role" "ssm_role" {
       {
         Effect = "Allow"
         Action = "sts:AssumeRole"
-        Principal = {
-          Service = coalescelist(flatten([
-            for r in var.trust_relationships :
-            try(r.Principal.Service, [])
-          ]), null)
-          AWS = coalescelist(flatten([
-            for r in var.trust_relationships :
-            try(r.Principal.AWS, [])
-          ]), null)
-        }
+        Principal = merge(
+          length(local.service_principals) > 0 ? { Service = local.service_principals } : {},
+          length(local.aws_principals) > 0 ? { AWS = local.aws_principals } : {}
+        )
       }
     ]
   })
