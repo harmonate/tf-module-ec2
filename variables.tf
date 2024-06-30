@@ -55,16 +55,9 @@ variable "iam_role_name" {
   default     = "ssm_instance_role"
 }
 
-variable "trust_relationships" {
-  description = "IAM trust relationships for the instance role"
-  type = list(object({
-    Effect = string
-    Action = list(string)
-    Principal = object({
-      Service = optional(list(string))
-      AWS     = optional(list(string))
-    })
-  }))
+variable "assume_role_policy" {
+  description = "JSON formatted string representing the assume role policy"
+  type        = string
 }
 
 variable "iam_policies" {

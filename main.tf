@@ -19,17 +19,9 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 resource "aws_iam_role" "ssm_role" {
-  provider = aws.default
-  name     = var.iam_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [for r in var.trust_relationships : {
-      Effect    = r.Effect
-      Action    = r.Action
-      Principal = r.Principal
-    }]
-  })
+  provider           = aws.default
+  name               = var.iam_role_name
+  assume_role_policy = var.assume_role_policy
 }
 
 resource "aws_iam_instance_profile" "ssm_profile" {
