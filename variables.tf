@@ -19,12 +19,6 @@ variable "additional_user_data" {
   default     = ""
 }
 
-# variable "additional_trust_policy" {
-#   description = "Additional trust policy for the instance role"
-#   type        = string
-#   default     = "{}"
-# }
-
 variable "ingress_ports" {
   description = "Map of ingress ports and their protocols"
   type = map(object({
@@ -53,4 +47,30 @@ variable "additional_iam_policies" {
   description = "List of additional IAM policy ARNs to attach to the instance role"
   type        = list(string)
   default     = []
+}
+
+variable "iam_role_name" {
+  description = "Name of the IAM role to create"
+  type        = string
+  default     = "ssm_instance_role"
+}
+
+variable "trust_relationships" {
+  description = "IAM trust relationships for the instance role"
+  type = list(object({
+    effect  = string
+    actions = list(string)
+    principals = object({
+      type        = string
+      identifiers = list(string)
+    })
+  }))
+}
+
+variable "iam_policies" {
+  description = "IAM policies to attach to the instance role"
+  type = list(object({
+    name = string
+    policy = string
+  }))
 }

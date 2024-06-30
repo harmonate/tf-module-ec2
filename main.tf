@@ -18,6 +18,29 @@ data "aws_ami" "amazon_linux_2" {
   owners = ["amazon"]
 }
 
+resource "aws_iam_role" "ssm_role" {
+  provider = aws.default
+  name     = var.iam_role_name
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = var.trust_relationships
+  })
+}
+
+resource "aws_iam_instance_profile" "ssm_profile" {
+  provider = aws.default
+  name     = "${var.iam_role_name}_profile"
+  role     = aws_iam_role.ssm_role.name
+}
+
+resource "aws_iam_role_policy" "custom_policies" {
+  count  = length(var.iam_policies)
+  name   = var.iam_policies[count.index].name
+  role   = aws_iam_role.ssm_role.id
+  policy = var.iam_policies[count.index].policy
+}
+
 resource "aws_instance" "ec2_instance" {
   provider               = aws.default
   ami                    = data.aws_ami.amazon_linux_2.id
@@ -41,47 +64,11 @@ resource "aws_instance" "ec2_instance" {
   })
 
   # Enable SSM
-  iam_instance_profile = aws_iam_instance_profile.ssm_role.name
+  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
 
   lifecycle {
     ignore_changes = [ami, tags, volume_tags]
   }
-}
-
-resource "aws_iam_instance_profile" "ssm_role" {
-  provider = aws.default
-  name     = "ssm_instance_profile"
-  role     = aws_iam_role.ssm_role.name
-}
-
-resource "aws_iam_role" "ssm_role" {
-  provider = aws.default
-  name     = "ssm_instance_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ssm" {
-  provider   = aws.default
-  role       = aws_iam_role.ssm_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_role_policy_attachment" "additional_policies" {
-  count      = length(var.additional_iam_policies)
-  policy_arn = var.additional_iam_policies[count.index]
-  role       = aws_iam_role.ssm_role.name
 }
 
 resource "aws_security_group" "ssm_sg" {

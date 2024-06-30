@@ -31,11 +31,86 @@ module "ec2_with_ssm" {
     }
   }
 
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello World" > /home/ec2-user/hello-world.sh
-              chmod +x /home/ec2-user/hello-world.sh
-              EOF
+  additional_user_data = templatefile("${path.module}/scripts/project_template.tftpl", {
+    variable_name        = aws_resource.name
+  })
 
+  iam_role_name = "my_custom_role"
+  trust_relationships = local.trust_relationships
+  iam_policies = local.iam_policies
+
+}
+
+# Define trust relationships
+locals {
+  trust_relationships = [
+    {
+      effect  = "Allow"
+      actions = ["sts:AssumeRole"]
+      principals = {
+        type        = "Service"
+        identifiers = ["ec2.amazonaws.com"]
+      }
+    },
+    {
+      effect  = "Allow"
+      actions = ["sts:AssumeRole"]
+      principals = {
+        type        = "AWS"
+        identifiers = ["arn:aws:iam::123456789012:root"]
+      }
+    }
+  ]
+}
+
+# Define IAM policies
+locals {
+  iam_policies = [
+    {
+      name = "SSMManagedInstanceCore"
+      policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Effect = "Allow"
+            Action = [
+              "ssm:DescribeAssociation",
+              "ssm:GetDeployablePatchSnapshotForInstance",
+              "ssm:GetDocument",
+              "ssm:DescribeDocument",
+              "ssm:GetManifest",
+              "ssm:GetParameter",
+              "ssm:GetParameters",
+              "ssm:ListAssociations",
+              "ssm:ListInstanceAssociations",
+              "ssm:PutInventory",
+              "ssm:PutComplianceItems",
+              "ssm:PutConfigurePackageResult",
+              "ssm:UpdateAssociationStatus",
+              "ssm:UpdateInstanceAssociationStatus",
+              "ssm:UpdateInstanceInformation"
+            ]
+            Resource = "*"
+          }
+        ]
+      })
+    },
+    {
+      name = "custom_s3_access"
+      policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Effect = "Allow"
+            Action = [
+              "s3:GetObject",
+              "s3:PutObject"
+            ]
+            Resource = "arn:aws:s3:::my-bucket/*"
+          }
+        ]
+      })
+    }
+  ]
 }
 ```

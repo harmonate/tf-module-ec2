@@ -41,3 +41,5 @@ terraform.rc
 
 test.sh
 provider_local.tf
+*.yaml
+*.txt
