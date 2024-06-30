@@ -19,14 +19,14 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 locals {
-  service_principals = distinct(flatten([
+  service_principals = flatten([
     for r in var.trust_relationships :
     try(r.Principal.Service, [])
-  ]))
-  aws_principals = distinct(flatten([
+  ])
+  aws_principals = flatten([
     for r in var.trust_relationships :
     try(r.Principal.AWS, [])
-  ]))
+  ])
 }
 
 resource "aws_iam_role" "ssm_role" {
