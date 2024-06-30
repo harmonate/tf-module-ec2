@@ -61,7 +61,8 @@ variable "trust_relationships" {
     Effect = string
     Action = list(string)
     Principal = object({
-      Service = list(string)
+      Service = optional(list(string))
+      AWS     = optional(list(string))
     })
   }))
 }
