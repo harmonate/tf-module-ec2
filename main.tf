@@ -28,14 +28,16 @@ resource "aws_iam_role" "ssm_role" {
       {
         Effect = "Allow"
         Action = "sts:AssumeRole"
-        Principal = merge(
-          length([for r in var.trust_relationships : r.Principal.Service if can(r.Principal.Service)][0] != null ? [for r in var.trust_relationships : r.Principal.Service if can(r.Principal.Service)][0] : []) > 0 ? {
-            Service = distinct(flatten([for r in var.trust_relationships : r.Principal.Service if can(r.Principal.Service)]))
-          } : {},
-          length([for r in var.trust_relationships : r.Principal.AWS if can(r.Principal.AWS)][0] != null ? [for r in var.trust_relationships : r.Principal.AWS if can(r.Principal.AWS)][0] : []) > 0 ? {
-            AWS = distinct(flatten([for r in var.trust_relationships : r.Principal.AWS if can(r.Principal.AWS)]))
-          } : {}
-        )
+        Principal = {
+          Service = distinct(flatten([
+            for r in var.trust_relationships :
+            try(r.Principal.Service, [])
+          ]))
+          AWS = distinct(flatten([
+            for r in var.trust_relationships :
+            try(r.Principal.AWS, [])
+          ]))
+        }
       }
     ]
   })
