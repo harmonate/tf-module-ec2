@@ -37,7 +37,6 @@ resource "aws_iam_role_policy_attachment" "arn_policies" {
   role       = aws_iam_role.ssm_role.name
 }
 
-
 resource "aws_iam_instance_profile" "ssm_profile" {
   provider = aws.default
   name     = "${var.iam_role_name}_profile"
