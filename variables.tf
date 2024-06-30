@@ -58,11 +58,10 @@ variable "iam_role_name" {
 variable "trust_relationships" {
   description = "IAM trust relationships for the instance role"
   type = list(object({
-    effect  = string
-    actions = list(string)
-    principals = object({
-      type        = string
-      identifiers = list(string)
+    Effect = string
+    Action = list(string)
+    Principal = object({
+      Service = list(string)
     })
   }))
 }
@@ -70,7 +69,7 @@ variable "trust_relationships" {
 variable "iam_policies" {
   description = "IAM policies to attach to the instance role"
   type = list(object({
-    name = string
+    name   = string
     policy = string
   }))
 }
