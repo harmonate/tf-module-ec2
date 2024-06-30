@@ -24,7 +24,11 @@ resource "aws_iam_role" "ssm_role" {
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = var.trust_relationships
+    Statement = [for relationship in var.trust_relationships : {
+      Effect    = relationship.Effect
+      Action    = relationship.Action
+      Principal = relationship.Principal
+    }]
   })
 }
 
